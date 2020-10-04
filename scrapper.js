@@ -45,6 +45,7 @@ function checkIfRequestIsValid(data){
 }
 
 async function login(page) {
+
   await page.goto(process.env.WEBSITE);
   await page.click(USERNAME_SELECTOR);
   await page.keyboard.type(process.env.USERNAME_EMAIL);
@@ -62,7 +63,7 @@ async function login(page) {
   const tk = await page.$('#token');
   token = await page.evaluate(tk => tk.value, tk);
   await page.click(CTA_LOGOUT);
-  await page.screenshot({path: 'salus.png'});
+  //await page.screenshot({path: 'salus.png'});
 
 }
 
@@ -89,18 +90,21 @@ app.get('/api/fetchThermostatData', checkMyToken, function(req, res) {
       }
     }
 
-      // Closing the Puppeteer controlled headless browser
+    // Closing the Puppeteer controlled headless browser
     await browser.close();
     res.send(innerText);
   });
 });
 
+
+// WIP To Do 
 app.post('/api/setThermostatData', checkMyToken, function(req, res) {
   
     res.send(req.query)
   
 })
 
+// WIP To Do 
 app.post('/api/increaseThermostatData', checkMyToken, async function(req, res) {
   
   let currentRoomTemp, currentSetPoint = '' 
@@ -114,6 +118,7 @@ app.post('/api/increaseThermostatData', checkMyToken, async function(req, res) {
 
 })
 
+// WIP To Do 
 app.post('/api/decreaseThermostatData', checkMyToken, async function(req, res) {
   
   let currentRoomTemp, currentSetPoint = '' 
