@@ -134,5 +134,5 @@ app.post('/api/decreaseThermostatData', checkMyToken, async function(req, res) {
 
 // Making Express listen on port
 app.listen(process.env.PORT, function () {
-  //console.log(`Running on port ${process.env.PORT}.`);
+  console.log(`Running on port ${process.env.PORT}.`);
 });
