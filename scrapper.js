@@ -23,14 +23,16 @@ function generateRequestUrl(){
   return token ? `https://salus-it500.com/public/ajax_device_values.php?devId=${deviceId}&token=${token}&_=${Date.now()}`: null;
 }
 
-async function makeRequestWithoutLogin(page) {
+async function makeRequestWithoutLogin() {
+
   let api_url = generateRequestUrl();
   if(api_url) {
     // do API request
-    await page.goto(api_url);
-    innerText = await page.evaluate(() =>  {
-        return JSON.parse(document.querySelector("body").innerText); 
-    });
+    await axios.get(api_url).then( data => {
+      innerText = data.data
+    }).catch( e => {
+      return res.status(404).send({'status': "salus api request error"})
+    })
     return innerText 
   }
   return false
@@ -56,7 +58,7 @@ async function login(page) {
   //await page.screenshot({path: 'salus.png'});
   await page.click(DEVICE_SELECTOR);
   await page.waitForSelector('#TabbedPanels1', {
-  visible: true,
+    visible: true,
   });
   const devId = await page.$('#devId');
   deviceId = await page.evaluate(devId => devId.value, devId);
@@ -74,19 +76,19 @@ app.get('/api/fetchThermostatData', checkMyToken, function(req, res) {
       
     const page = await browser.newPage();
 
-    innerText = await makeRequestWithoutLogin(page);
+    innerText = await makeRequestWithoutLogin();
 
     if(!innerText) {
         // make request with login 
         await login(page)
-        innerText = await makeRequestWithoutLogin(page);
+        innerText = await makeRequestWithoutLogin();
 
     } else {
 
       if(!checkIfRequestIsValid(innerText)) {
         // make request with login 
         await login(page)
-        innerText = await makeRequestWithoutLogin(page);
+        innerText = await makeRequestWithoutLogin();
       }
     }
 
