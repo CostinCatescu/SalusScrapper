@@ -102,9 +102,36 @@ app.get('/api/fetchThermostatData', checkMyToken, function(req, res) {
 
 
 // WIP To Do 
-app.post('/api/setThermostatData', checkMyToken, function(req, res) {
+app.post('/api/setThermostatData', checkMyToken, async function(req, res) {
   
-    res.send(req.query)
+  if(req.query.currentSetPoint) {
+  // fetch data to login in the API 
+    if(!token || !deviceId) {
+      await axios.get(`${process.env.HOSTNAME}:${process.env.PORT}/api/fetchThermostatData?token=${process.env.MY_TOKEN}`).then(data => {
+        currentSetPoint = data.data.CH1currentSetPoint
+        currentRoomTemp = data.data.CH1currentRoomTemp
+      })
+    }
+    await axios.post('https://salus-it500.com/includes/set.php', querystring.stringify({
+      'token': token,
+      'tempUnit': 0,
+      'devId': deviceId,
+      'current_tempZ1_set': 1,
+      'current_tempZ1': parseFloat(req.query.currentSetPoint)
+    }))
+    .then(data => {
+      if(data.data.retCode === "0" ) {
+        res.status(200).send( { currentSetPoint : parseFloat(req.query.currentSetPoint) } )
+      } else {
+        res.status(404).send( { 'status' : '404', 'message': data.data } )
+      }
+      
+    }).catch(e=> {
+      res.status(404).send( { 'status' : 'salus api error' } )
+    })
+  } else {
+    res.status(404).send( { 'status' : 'Please provide currentSetPoint query string!' } )
+  }
   
 })
 
