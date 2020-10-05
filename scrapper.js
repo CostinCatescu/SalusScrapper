@@ -11,13 +11,15 @@ const CTA_SELECTOR = '#login';
 const CTA_LOGOUT = '#navBar > li:nth-child(4) > a'
 const axios = require('axios')
 var token, deviceId, innerText; 
+var querystring = require('querystring');
 
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: true }))
  
 // parse application/json
 app.use(bodyParser.json())
 
 const checkMyToken = require('./middleware/checkMyToken');
+const { head } = require('request-promise-native');
 
 function generateRequestUrl(){
   return token ? `https://salus-it500.com/public/ajax_device_values.php?devId=${deviceId}&token=${token}&_=${Date.now()}`: null;
@@ -106,31 +108,66 @@ app.post('/api/setThermostatData', checkMyToken, function(req, res) {
   
 })
 
-// WIP To Do 
 app.post('/api/increaseThermostatData', checkMyToken, async function(req, res) {
+
+  let increaseBy = req.query.increaseBy ? parseFloat(req.query.increaseBy) : 0.5; 
   
   let currentRoomTemp, currentSetPoint = '' 
 
   await axios.get(`${process.env.HOSTNAME}:${process.env.PORT}/api/fetchThermostatData?token=${process.env.MY_TOKEN}`).then(data => {
-    currentRoomTemp = data.data.CH1currentRoomTemp
     currentSetPoint = data.data.CH1currentSetPoint
+    currentRoomTemp = data.data.CH1currentRoomTemp
   })
 
-  res.status(200).send( { currentRoomTemp : parseFloat(currentSetPoint) + 0.5 } )
+  await axios.post('https://salus-it500.com/includes/set.php', querystring.stringify({
+    'token': token,
+    'tempUnit': 0,
+    'devId': deviceId,
+    'current_tempZ1_set': 1,
+    'current_tempZ1': parseFloat(currentSetPoint) + increaseBy
+  }))
+  .then(data => {
+    if(data.data.retCode === "0" ) {
+      res.status(200).send( { currentSetPoint : parseFloat(currentSetPoint) + parseFloat(increaseBy), currentRoomTemp: currentRoomTemp } )
+    } else {
+      res.status(404).send( { 'status' : '404', 'message': data.data } )
+    }
+    
+  }).catch(e=> {
+    res.status(404).send( { 'status' : 'salus api error' } )
+  })
 
 })
 
-// WIP To Do 
+
 app.post('/api/decreaseThermostatData', checkMyToken, async function(req, res) {
+
+  let decreaseBy = req.query.decreaseBy ? parseFloat(req.query.decreaseBy) : 0.5; 
   
   let currentRoomTemp, currentSetPoint = '' 
 
   await axios.get(`${process.env.HOSTNAME}:${process.env.PORT}/api/fetchThermostatData?token=${process.env.MY_TOKEN}`).then(data => {
-    currentRoomTemp = data.data.CH1currentRoomTemp
     currentSetPoint = data.data.CH1currentSetPoint
+    currentRoomTemp = data.data.CH1currentRoomTemp
   })
 
-  res.status(200).send( { currentRoomTemp : parseFloat(currentSetPoint) - 0.5 } )
+  await axios.post('https://salus-it500.com/includes/set.php', querystring.stringify({
+    'token': token,
+    'tempUnit': 0,
+    'devId': deviceId,
+    'current_tempZ1_set': 1,
+    'current_tempZ1': parseFloat(currentSetPoint) - decreaseBy
+  }))
+  .then(data => {
+    if(data.data.retCode === "0" ) {
+      res.status(200).send( { currentSetPoint : parseFloat(currentSetPoint) - parseFloat(decreaseBy), currentRoomTemp: currentRoomTemp } )
+    } else {
+      res.status(404).send( { 'status' : '404', 'message': data.data } )
+    }
+    
+  }).catch(e=> {
+    res.status(404).send( { 'status' : 'salus api error' } )
+  })
 
 })
 
