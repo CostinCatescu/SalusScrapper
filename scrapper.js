@@ -100,8 +100,6 @@ app.get('/api/fetchThermostatData', checkMyToken, function(req, res) {
   });
 });
 
-
-// WIP To Do 
 app.post('/api/setThermostatData', checkMyToken, async function(req, res) {
   
   if(req.query.currentSetPoint) {
