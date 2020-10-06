@@ -133,6 +133,62 @@ app.post('/api/setThermostatData', checkMyToken, async function(req, res) {
   
 })
 
+app.post('/api/setThermostatDataMode', checkMyToken, async function(req, res) {
+  
+  if(req.query.mode) {
+
+    let mode = parseInt(req.query.mode)
+    // mode can be 
+    // schedule : 0, 
+    // off : 1
+    // manual : 2
+
+  // fetch data to login in the API 
+    if(!token || !deviceId) {
+      await axios.get(`${process.env.HOSTNAME}:${process.env.PORT}/api/fetchThermostatData?token=${process.env.MY_TOKEN}`).then(data => {
+        currentSetPoint = data.data.CH1currentSetPoint
+        currentRoomTemp = data.data.CH1currentRoomTemp
+      })
+    }
+
+    if(mode === 0 || mode === 1) {
+        queryData = {
+        'token': token,
+        'auto': mode,
+        'devId': deviceId,
+        'auto_setZ1': 1,
+      }
+    } 
+
+    // WIP - doesn`t work like that 
+  
+    // else if(mode === 2 ) {
+    //   queryData = {
+    //     'token': token,
+    //     'manual': mode,
+    //     'devId': deviceId,
+    //     'manual_setZ1': 1,
+    //   }
+    // }
+    
+    await axios.post('https://salus-it500.com/includes/set.php', querystring.stringify(queryData))
+    .then(data => {
+      if(data.data === "1" ) {
+        res.status(200).send( { 'status' : 'mode updated', mode } )
+      } else {
+        res.status(404).send( { 'status' : '404', 'message': data.data } )
+      }
+      
+    }).catch(e=> {
+      res.status(404).send( { 'status' : 'salus api error' } )
+    })
+  } else {
+    res.status(404).send( { 'status' : 'Please provide mode query string! (0 - schedule , 1 -  off)' } )
+  }
+  
+})
+
+
 app.post('/api/increaseThermostatData', checkMyToken, async function(req, res) {
 
   let increaseBy = req.query.increaseBy ? parseFloat(req.query.increaseBy) : 0.5; 
