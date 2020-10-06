@@ -1,5 +1,6 @@
 const dotenv = require('dotenv');
 dotenv.config();
+const functions = require('firebase-functions');
 const express = require('express'); // Adding Express
 var bodyParser = require('body-parser')
 const app = express(); // Initializing Express
@@ -27,7 +28,7 @@ function generateRequestUrl(){
 
 async function makeRequestWithoutLogin() {
 
-  let api_url = generateRequestUrl();
+  let api_url = generateRequestUrl()
   if(api_url) {
     // do API request
     await axios.get(api_url).then( data => {
@@ -71,6 +72,9 @@ async function login(page) {
 
 }
 
+app.get('/', function(req, res)  {
+  res.status(200).send('Welcome!');
+})
 app.get('/api/fetchThermostatData', checkMyToken, function(req, res) {
 
   // Launching the Puppeteer controlled headless browser and navigate to the Digimon website
@@ -252,7 +256,4 @@ app.post('/api/decreaseThermostatData', checkMyToken, async function(req, res) {
 
 })
 
-// Making Express listen on port
-app.listen(process.env.PORT, function () {
-  console.log(`Running on port ${process.env.PORT}.`);
-});
+exports.app = functions.https.onRequest(app);
