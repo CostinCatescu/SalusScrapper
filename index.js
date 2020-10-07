@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 const bodyParser = require('body-parser');
-const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 const express = require('express');
 const app = express(); // Initializing Express
 const HOSTNAME = process.env.APP_ENV === "local" ? `${process.env.DEV_HOSTNAME}:${process.env.PORT}` : process.env.FIREBASE_HOSTNAME; 
@@ -49,9 +49,12 @@ const  checkIfRequestIsValid = (data) =>{
 
 const login = async () => {
 
+    
+
     const browser = await puppeteer.launch({
-      executablePath: '/usr/bin/chromium-browser',
-      headless: true
+      executablePath: 'chromium-browser',
+      // headless: true,
+      // args: ["--no-sandbox", 'disable-setuid-sandbox']
     });
 
     const page = await browser.newPage();
@@ -159,6 +162,7 @@ app.post('/api/setThermostatDataMode', async (req, res) => {
 
   // fetch data to login in the API 
     if(!token || !deviceId) {
+      await login();
       await axios.get(`${HOSTNAME}/api/fetchThermostatData?token=${process.env.MY_TOKEN}`).then(data => {
         currentSetPoint = data.data.CH1currentSetPoint
         currentRoomTemp = data.data.CH1currentRoomTemp
