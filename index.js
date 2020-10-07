@@ -72,8 +72,9 @@ const login = async () => {
     await page.click(PASSWORD_SELECTOR);
     await page.keyboard.type(process.env.PASSWORD);
     await page.click(CTA_SELECTOR);
-    await page.waitForNavigation();
-    //await page.screenshot({path: 'salus.png'});
+    
+    //await page.waitForNavigation();
+    await page.screenshot({path: 'salus.png'});
     await page.click(DEVICE_SELECTOR);
     await page.waitForSelector('#TabbedPanels1', {
       visible: true,
