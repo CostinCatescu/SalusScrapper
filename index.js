@@ -61,7 +61,11 @@ const login = async () => {
    
     const browser = await getBrowser();
 
+  
+
     const page = await browser.newPage();
+    // Configure the navigation timeout
+    await page.setDefaultNavigationTimeout(0);
     await page.goto(process.env.WEBSITE);
     await page.click(USERNAME_SELECTOR);
     await page.keyboard.type(process.env.EMAIL);
