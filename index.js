@@ -17,6 +17,7 @@ var deviceId =  null;
 var innerText = null; 
 var querystring = require('querystring');
 app.use(bodyParser.urlencoded({ extended: true }))
+const { getBrowser } = require("./src/puppeteer-utils");
 
 // parse application/json
 app.use(bodyParser.json())
@@ -51,11 +52,14 @@ const login = async () => {
 
 
 
-    const browser = await puppeteer.launch({
-      executablePath: 'chromium-browser',
-      headless: false
-      // args: ["--no-sandbox", 'disable-setuid-sandbox']
-    });
+    // const browser = await puppeteer.launch({
+    //   executablePath: 'chromium-browser',
+    //   // headless: true
+    //   // args: ["--no-sandbox", 'disable-setuid-sandbox']
+    // });
+
+   
+    const browser = await getBrowser();
 
     const page = await browser.newPage();
     await page.goto(process.env.WEBSITE);
