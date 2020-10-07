@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 const bodyParser = require('body-parser');
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 const express = require('express');
 const app = express(); // Initializing Express
 const HOSTNAME = process.env.APP_ENV === "local" ? `${process.env.DEV_HOSTNAME}:${process.env.PORT}` : process.env.FIREBASE_HOSTNAME; 
@@ -50,9 +50,8 @@ const  checkIfRequestIsValid = (data) =>{
 const login = async () => {
 
     const browser = await puppeteer.launch({
-      executablePath: 'chromium-browser',
-      headless: true,
-      args: ['--no-sandbox']
+      executablePath: '/usr/bin/chromium-browser',
+      headless: true
     });
 
     const page = await browser.newPage();
