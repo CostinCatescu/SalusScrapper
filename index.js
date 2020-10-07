@@ -50,6 +50,7 @@ const  checkIfRequestIsValid = (data) =>{
 const login = async () => {
 
     const browser = await puppeteer.launch({
+      executablePath: 'chromium-browser',
       headless: true,
       args: ['--no-sandbox']
     });
