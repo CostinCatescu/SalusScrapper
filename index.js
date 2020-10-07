@@ -118,7 +118,6 @@ app.post('/api/setThermostatData', async (req, res) => {
   if(req.query.currentSetPoint) {
   // fetch data to login in the API 
     if(!token || !deviceId) {
-      await login();
       await axios.get(`${HOSTNAME}/api/fetchThermostatData?token=${process.env.MY_TOKEN}`).then(data => {
         currentSetPoint = data.data.CH1currentSetPoint
         currentRoomTemp = data.data.CH1currentRoomTemp
@@ -160,7 +159,6 @@ app.post('/api/setThermostatDataMode', async (req, res) => {
 
   // fetch data to login in the API 
     if(!token || !deviceId) {
-      await login();
       await axios.get(`${HOSTNAME}/api/fetchThermostatData?token=${process.env.MY_TOKEN}`).then(data => {
         currentSetPoint = data.data.CH1currentSetPoint
         currentRoomTemp = data.data.CH1currentRoomTemp
