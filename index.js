@@ -49,11 +49,11 @@ const  checkIfRequestIsValid = (data) =>{
 
 const login = async () => {
 
-    
+
 
     const browser = await puppeteer.launch({
       executablePath: 'chromium-browser',
-      // headless: true,
+      headless: false
       // args: ["--no-sandbox", 'disable-setuid-sandbox']
     });
 
