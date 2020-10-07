@@ -125,7 +125,7 @@ app.get('/api/fetchThermostatData', async (req, res) =>{
   return res.send(innerText);
 })
 
-app.post('/api/setThermostatData', async (req, res) => {
+app.get('/api/setThermostatData', async (req, res) => {
   
   if(req.query.currentSetPoint) {
   // fetch data to login in the API 
@@ -159,7 +159,7 @@ app.post('/api/setThermostatData', async (req, res) => {
   }
 })
 
-app.post('/api/setThermostatDataMode', async (req, res) => {
+app.get('/api/setThermostatDataMode', async (req, res) => {
   
   if(req.query.mode) {
 
@@ -218,7 +218,7 @@ app.post('/api/setThermostatDataMode', async (req, res) => {
 })
 
 
-app.post('/api/increaseThermostatData', async (req, res) => {
+app.get('/api/increaseThermostatData', async (req, res) => {
 
   let increaseBy = req.query.increaseBy ? parseFloat(req.query.increaseBy) : 0.5; 
   
@@ -251,7 +251,7 @@ app.post('/api/increaseThermostatData', async (req, res) => {
 })
 
 
-app.post('/api/decreaseThermostatData', async (req, res) => {
+app.get('/api/decreaseThermostatData', async (req, res) => {
 
   let decreaseBy = req.query.decreaseBy ? parseFloat(req.query.decreaseBy) : 0.5; 
   
