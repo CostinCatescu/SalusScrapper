@@ -65,7 +65,7 @@ const login = async () => {
 
     const page = await browser.newPage();
     // Configure the navigation timeout
-    await page.setDefaultNavigationTimeout(0);
+    //await page.setDefaultNavigationTimeout(0);
     await page.goto(process.env.WEBSITE);
     await page.click(USERNAME_SELECTOR);
     await page.keyboard.type(process.env.EMAIL);
@@ -73,8 +73,8 @@ const login = async () => {
     await page.keyboard.type(process.env.PASSWORD);
     await page.click(CTA_SELECTOR);
     
-    //await page.waitForNavigation();
-    await page.screenshot({path: 'salus.png'});
+    await page.waitForSelector(DEVICE_SELECTOR);
+    
     await page.click(DEVICE_SELECTOR);
     await page.waitForSelector('#TabbedPanels1', {
       visible: true,
